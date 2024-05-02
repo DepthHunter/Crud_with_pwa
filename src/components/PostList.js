@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { deleteExpense, editExpense } from '../redux/actions';
 
@@ -7,27 +7,26 @@ const ExpensesList = ({ expenses, deleteExpense, editExpense }) => {
   const [updatedName, setUpdatedName] = useState('');
   const [updatedDescription, setUpdatedDescription] = useState('');
 
-  const handleDelete = (id) => {
+  const handleDelete = useCallback((id) => {
     deleteExpense(id);
-  };
+  }, [deleteExpense]);
 
-  const handleEdit = (expense) => {
+  const handleEdit = useCallback((expense) => {
     setEditMode(expense.id);
     setUpdatedName(expense.name);
     setUpdatedDescription(expense.description);
-  };
+  }, []);
 
-  const handleSaveEdit = (expense) => {
+  const handleSaveEdit = useCallback((expense) => {
     editExpense(expense.id, { ...expense, name: updatedName, description: updatedDescription });
     setEditMode(null);
-  };
+  }, [editExpense, updatedName, updatedDescription]);
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setEditMode(null);
     setUpdatedName('');
     setUpdatedDescription('');
-  };
-
+  }, []);
 
   const memoizedExpenses = useMemo(() => {
     return expenses.map(expense => (
@@ -52,7 +51,7 @@ const ExpensesList = ({ expenses, deleteExpense, editExpense }) => {
 
   return (
     <div>
-      <h2>Post List</h2>
+      <h2>Expenses List</h2>
       <ul>{memoizedExpenses}</ul>
     </div>
   );
